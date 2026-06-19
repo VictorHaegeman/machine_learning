@@ -11,7 +11,7 @@ CONTROL_TIMESTEP: float = 0.05   # 20 Hz (cadence tmrl)
 # reward.pkl par défaut = la ligne centrale de tmrl-train (marche tout de suite
 # sur cette map). Pour une AUTRE map : lance `python record_reward.py`, conduis
 # un tour, puis mets REWARD_PKL = "reward.pkl".
-REWARD_PKL: str = r"C:/Users/victo/TmrlData/reward/reward.pkl"  # ligne de tmrl-train (marche directement)
+REWARD_PKL: str = "reward.pkl"   # ta ligne enregistrée (python record_reward.py)
 
 # Paramètres de RewardFunction (valeurs éprouvées de tmrl)
 CHECK_FORWARD:     int   = 500     # autorise/récompense les coupes
@@ -42,6 +42,10 @@ GAMMA:              float = 0.995     # horizon long (tmrl)
 TRAIN_FREQ:         int   = 1
 GRADIENT_STEPS:     int   = 2
 ENT_COEF:           str   = "auto"
+# target_entropy moins négatif que le défaut (-3 pour 3 actions) → garde plus
+# d'exploration et évite que ent_coef s'effondre à 0 (politique figée qui retape
+# le même mur sans jamais essayer de freiner).
+TARGET_ENTROPY:     float = -1.0
 
 USE_SDE:          bool = True
 SDE_SAMPLE_FREQ:  int  = 64

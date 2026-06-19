@@ -57,9 +57,14 @@ class TrackmaniaEnv(gym.Env):
     Observation : FRAME_STACK frames concaténées, chacune =
         [speed, posx, posy, posz, steer, gas, brake, gear, rpm] + lidar[19]
 
-    Action (2 floats en [-1, 1]) :
+    Action (3 floats en [-1, 1]) :
         action[0]  direction (stick gauche X)
-        action[1]  frein si > 0.5     (gaz toujours à fond)
+        action[1]  gaz       → (action[1]+1)/2 ∈ [0,1], défaut 0.5 (biaisé « on »
+                              pour éviter la voiture immobile en exploration)
+        action[2]  frein     → clip(action[2], 0, 1)
+
+    L'agent peut enfin LEVER LE PIED / freiner avant les virages au lieu de foncer
+    plein gaz dedans → indispensable pour ne plus clipper les murs en courbe.
     """
 
     metadata = {"render_modes": []}
@@ -71,8 +76,8 @@ class TrackmaniaEnv(gym.Env):
             low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32
         )
         self.action_space = spaces.Box(
-            low=np.array([-1.0, -1.0], dtype=np.float32),
-            high=np.array([ 1.0,  1.0], dtype=np.float32),
+            low=np.array([-1.0, -1.0, -1.0], dtype=np.float32),
+            high=np.array([ 1.0,  1.0,  1.0], dtype=np.float32),
         )
 
         log.info("Connexion au plugin TMRL_GrabData.op (port %d) …", port)
@@ -209,8 +214,9 @@ class TrackmaniaEnv(gym.Env):
 
     def _apply_action(self, action: np.ndarray) -> None:
         steer = float(np.clip(action[0], -1.0, 1.0))
-        brake = 1.0 if action[1] > 0.5 else 0.0
-        self.gamepad.right_trigger_float(value_float=1.0)   # gaz toujours à fond
+        gas   = float((np.clip(action[1], -1.0, 1.0) + 1.0) / 2.0)  # 0..1, défaut 0.5
+        brake = float(np.clip(action[2], 0.0, 1.0))
+        self.gamepad.right_trigger_float(value_float=gas)
         self.gamepad.left_trigger_float(value_float=brake)
         self.gamepad.left_joystick_float(x_value_float=steer, y_value_float=0.0)
         self.gamepad.update()

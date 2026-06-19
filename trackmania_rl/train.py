@@ -69,6 +69,7 @@ def main(resume: str | None = None) -> None:
             train_freq=config.TRAIN_FREQ,
             gradient_steps=config.GRADIENT_STEPS,
             ent_coef=config.ENT_COEF,
+            target_entropy=config.TARGET_ENTROPY,
             use_sde=config.USE_SDE,
             sde_sample_freq=config.SDE_SAMPLE_FREQ,
             policy_kwargs=dict(net_arch=config.NET_ARCH),
