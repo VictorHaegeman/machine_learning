@@ -41,11 +41,10 @@ TAU:                float = 0.005     # = POLYAK 0.995 de tmrl
 GAMMA:              float = 0.995     # horizon long (tmrl)
 TRAIN_FREQ:         int   = 1
 GRADIENT_STEPS:     int   = 2
-ENT_COEF:           str   = "auto"
-# target_entropy moins négatif que le défaut (-3 pour 3 actions) → garde plus
-# d'exploration et évite que ent_coef s'effondre à 0 (politique figée qui retape
-# le même mur sans jamais essayer de freiner).
-TARGET_ENTROPY:     float = -1.0
+# Entropie FIXE (au lieu de "auto" qui s'effondrait à 0 → politique figée qui
+# ne finit jamais). 0.1 = exploration permanente modérée, dès le 1er entraînement.
+ENT_COEF:           float = 0.1
+TARGET_ENTROPY:     float = -1.0   # (ignoré quand ent_coef est fixe)
 # Sur --resume : force une entropie FIXE pour raviver l'exploration morte
 # (ent_coef auto s'effondre à 0 → politique figée). None = garder l'entropie sauvée.
 RESUME_ENT_COEF:    float = 0.1
