@@ -21,7 +21,7 @@ MIN_STEPS:         int   = 70      # pas d'échec avant ce nb de steps (3.5 s)
 MAX_STRAY:         float = 100.0   # reward nul si trop loin de la trajectoire
 
 K_TRAJ:       float = 1.0          # poids de la récompense de trajectoire
-K_SPEED:      float = 0.1          # petit bonus de vitesse (densifie le signal)
+K_SPEED:      float = 0.2          # bonus de vitesse modéré → pousse à accélérer sans dominer la ligne
 FINISH_BONUS: float = 100.0        # bonus d'arrivée (= END_OF_TRACK de tmrl)
 
 # ── Observation ───────────────────────────────────────────────────────────────
@@ -46,6 +46,9 @@ ENT_COEF:           str   = "auto"
 # d'exploration et évite que ent_coef s'effondre à 0 (politique figée qui retape
 # le même mur sans jamais essayer de freiner).
 TARGET_ENTROPY:     float = -1.0
+# Sur --resume : force une entropie FIXE pour raviver l'exploration morte
+# (ent_coef auto s'effondre à 0 → politique figée). None = garder l'entropie sauvée.
+RESUME_ENT_COEF:    float = 0.1
 
 USE_SDE:          bool = True
 SDE_SAMPLE_FREQ:  int  = 64

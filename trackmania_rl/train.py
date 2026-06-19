@@ -56,6 +56,13 @@ def main(resume: str | None = None) -> None:
     if resume:
         log.info("Reprise depuis %s", resume)
         model = SAC.load(resume, env=env, device=device)
+        # L'entropie auto s'effondre à 0 → politique figée qui retape le même mur.
+        # On la FIXE pour garantir une exploration permanente et sortir de l'ornière.
+        if config.RESUME_ENT_COEF is not None:
+            model.ent_coef_optimizer = None
+            model.log_ent_coef = None
+            model.ent_coef_tensor = torch.tensor(float(config.RESUME_ENT_COEF), device=model.device)
+            log.info("Entropie fixée à %.3f → exploration relancée.", config.RESUME_ENT_COEF)
     else:
         model = SAC(
             "MlpPolicy",
