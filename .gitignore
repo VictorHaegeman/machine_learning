@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+models/
+logs/
+*.zip
+.env
+
+# Données / diagnostics locaux
+.jolli/
+docs/
+diag_*.png
+reward.pkl
